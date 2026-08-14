@@ -258,7 +258,7 @@
     <div id="home-section" class="hero-glow animate-fade-in hidden">
       <div id="continue-bar-container" class="hidden px-4 sm:px-6 lg:px-8 max-w-[1800px] mx-auto"></div>
 
-      <div class="w-full px-0 sm:px-6 lg:px-8 max-w-[1800px] mx-auto">
+      <div class="w-full px-4 sm:px-6 lg:px-8 max-w-[1800px] mx-auto">
         <div id="hero-container" class="relative w-full aspect-[4/5] xs:aspect-[1/1] sm:aspect-[16/9] lg:aspect-[21/9] max-h-[85vh] overflow-hidden sm:rounded-3xl border-y sm:border border-gray-200 dark:border-zinc-800/80 shadow-2xl mb-10 sm:mb-14 cursor-pointer group bg-zinc-900">
           <!-- Hero content dynamically injected -->
         </div>
@@ -522,8 +522,8 @@
         const desktopBtn = document.getElementById(`toggle-${btn}-desktop`);
         const mobileBtn = document.getElementById(`toggle-${btn}-mobile`);
         if (btn === type) {
-          desktopBtn.className = "px-4 py-1.5 rounded-lg bg-red-600 text-white shadow-md transition-all active:scale-95";
-          mobileBtn.className = "flex-1 px-3 py-2 rounded-lg bg-red-600 text-white shadow-sm transition-all active:scale-95 text-center";
+          desktopBtn.className = "px-4 py-1.5 rounded-lg bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-md shadow-fuchsia-500/20 transition-all active:scale-95";
+          mobileBtn.className = "flex-1 px-3 py-2 rounded-lg bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-md shadow-fuchsia-500/20 transition-all active:scale-95 text-center";
         } else {
           desktopBtn.className = "px-4 py-1.5 rounded-lg text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white transition-all active:scale-95";
           mobileBtn.className = "flex-1 px-3 py-2 rounded-lg text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white transition-all active:scale-95 text-center";
@@ -550,15 +550,15 @@
             <div class="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/80 to-transparent sm:bg-gradient-to-r sm:from-zinc-950 sm:via-zinc-900/80 sm:to-transparent"></div>
             
             <div class="absolute inset-0 p-6 sm:p-10 lg:p-16 w-full sm:w-3/4 lg:w-1/2 flex flex-col justify-end">
-                <span class="w-max bg-red-600 text-white text-[10px] sm:text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider mb-4 shadow-lg shadow-red-600/30">${type}</span>
+                <span class="w-max bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-[10px] sm:text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider mb-4 shadow-[0_0_15px_rgba(217,70,239,0.5)]">${type}</span>
                 <h2 class="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black text-white mb-4 tracking-tight leading-tight drop-shadow-md">${title}</h2>
                 <div class="flex items-center gap-4 text-zinc-300 text-xs sm:text-sm mb-4 font-medium drop-shadow">
-                    <span class="flex items-center gap-1 text-amber-400"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg> ${item.vote_average ? item.vote_average.toFixed(1) : 'N/A'}</span>
+                    <span class="flex items-center gap-1 text-amber-400"><svg class="w-4 h-4 drop-shadow-[0_0_5px_rgba(251,191,36,0.6)]" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg> ${item.vote_average ? item.vote_average.toFixed(1) : 'N/A'}</span>
                     <span>${(item.release_date || item.first_air_date || '').substring(0,4)}</span>
                 </div>
                 <p class="text-zinc-300 text-sm sm:text-base line-clamp-3 mb-6 max-w-lg drop-shadow">${overview}</p>
-                <button onclick="openModal(${item.id}, '${type}')" class="w-full sm:w-max justify-center bg-white hover:bg-gray-100 text-black px-8 py-3.5 rounded-xl font-bold flex items-center gap-2 transition-all active:scale-95 shadow-xl text-sm sm:text-base">
-                    <svg class="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Play Now
+                <button onclick="openModal(${item.id}, '${type}')" class="w-full sm:w-max justify-center bg-white hover:bg-gray-100 text-black px-8 py-3.5 rounded-xl font-bold flex items-center gap-2 transition-all active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.15)] text-sm sm:text-base">
+                    <svg class="w-5 h-5 text-fuchsia-600" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Play Now
                 </button>
             </div>
         `;
@@ -590,7 +590,7 @@
                 <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4">
                   <h3 class="text-white font-bold text-sm sm:text-base line-clamp-2 leading-tight">${title}</h3>
                   <div class="flex items-center gap-2 mt-2 text-xs text-gray-300">
-                      <span class="text-red-400 font-bold uppercase">${type}</span>
+                      <span class="text-fuchsia-400 font-bold uppercase drop-shadow-[0_0_5px_rgba(232,121,249,0.3)]">${type}</span>
                       <span>★ ${item.vote_average ? item.vote_average.toFixed(1) : 'N/A'}</span>
                   </div>
                 </div>
@@ -611,9 +611,9 @@
 
       if(btnElement) {
         if (genreId === 'top') {
-          btnElement.className = "genre-pill active text-white bg-amber-500 border border-transparent px-5 py-2 rounded-full shrink-0 font-bold transition-transform duration-200 active:scale-90 shadow-sm cursor-pointer select-none whitespace-nowrap";
+          btnElement.className = "genre-pill active text-white bg-amber-500 border border-transparent px-5 py-2 rounded-full shrink-0 font-bold transition-transform duration-200 active:scale-90 shadow-lg shadow-amber-500/20 cursor-pointer select-none whitespace-nowrap";
         } else {
-          btnElement.className = "genre-pill active text-white bg-gray-900 dark:bg-zinc-100 dark:text-zinc-900 border border-transparent px-5 py-2 rounded-full shrink-0 transition-transform duration-200 active:scale-90 shadow-sm cursor-pointer select-none whitespace-nowrap";
+          btnElement.className = "genre-pill active text-white bg-gradient-to-r from-violet-600 to-fuchsia-600 border border-transparent px-5 py-2 rounded-full shrink-0 transition-transform duration-200 active:scale-90 shadow-lg shadow-fuchsia-500/20 cursor-pointer select-none whitespace-nowrap font-bold";
         }
       }
 
@@ -861,7 +861,7 @@
         if (!serverFound) {
             document.querySelector('#iframe-loader span').textContent = 'All servers unavailable';
             document.querySelector('#iframe-loader span').classList.remove('pulse-glow');
-            document.querySelector('#iframe-loader span').classList.add('text-red-500');
+            document.querySelector('#iframe-loader span').classList.add('text-fuchsia-500');
             document.querySelector('#iframe-loader .animate-spin').style.display = 'none';
             document.getElementById('current-server-name').textContent = `Error: No servers available`;
             showToast('Unable to find a working streaming server for this title.');
@@ -940,7 +940,7 @@
             data.episodes.forEach(ep => {
                 const isTarget = ep.episode_number == epToPlay;
                 const div = document.createElement('div');
-                div.className = `episode-card p-3 rounded-xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 cursor-pointer hover:border-red-500 transition-all shadow-sm flex gap-3 ${isTarget ? 'active' : ''}`;
+                div.className = `episode-card p-3 rounded-xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 cursor-pointer hover:border-fuchsia-500 transition-all shadow-sm flex gap-3 ${isTarget ? 'active' : ''}`;
                 div.onclick = () => playEpisode(ep.episode_number, div);
                 
                 const img = ep.still_path ? `<img src="${IMG_W500}${ep.still_path}" class="w-24 h-16 sm:w-32 sm:h-20 object-cover rounded-lg shrink-0">` : `<div class="w-24 h-16 sm:w-32 sm:h-20 bg-gray-200 dark:bg-zinc-800 rounded-lg shrink-0 flex items-center justify-center text-xs font-bold text-gray-400">No Image</div>`;
@@ -986,14 +986,17 @@
       const favoritesBtn = document.getElementById('tab-favorites');
       const title = document.getElementById('current-list-title');
 
+      const activeClass = "flex-1 sm:flex-none px-6 py-2.5 rounded-lg bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white shadow-md shadow-fuchsia-500/20 transition-all active:scale-95 text-center font-bold";
+      const inactiveClass = "flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white transition-all active:scale-95 text-center font-bold";
+
       if (tab === 'watchlist') {
-        watchlistBtn.className = "flex-1 sm:flex-none px-6 py-2.5 rounded-lg bg-red-600 text-white shadow-md transition-all active:scale-95 text-center";
-        favoritesBtn.className = "flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white transition-all active:scale-95 text-center";
+        watchlistBtn.className = activeClass;
+        favoritesBtn.className = inactiveClass;
         title.textContent = "Your Watchlist";
         renderGrid('lists-grid', watchlist);
       } else {
-        favoritesBtn.className = "flex-1 sm:flex-none px-6 py-2.5 rounded-lg bg-red-600 text-white shadow-md transition-all active:scale-95 text-center";
-        watchlistBtn.className = "flex-1 sm:flex-none px-6 py-2.5 rounded-lg text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white transition-all active:scale-95 text-center";
+        favoritesBtn.className = activeClass;
+        watchlistBtn.className = inactiveClass;
         title.textContent = "Your Favorites";
         renderGrid('lists-grid', favorites);
       }
@@ -1078,7 +1081,7 @@
             : `Server: ${lastWatched.serverName}`;
 
         container.innerHTML = `
-            <div class="glass-panel relative overflow-hidden rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center gap-4 border border-gray-200 dark:border-zinc-800/80 shadow-lg group mb-8">
+            <div class="glass-panel relative overflow-hidden rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center gap-4 border border-gray-200 dark:border-zinc-800/80 shadow-[0_10px_30px_-15px_rgba(217,70,239,0.3)] group mb-8">
                <div class="absolute inset-0 bg-cover bg-center opacity-10 dark:opacity-20 transition-transform duration-700 group-hover:scale-105" style="background-image: url('${bgImg}')"></div>
                <div class="absolute inset-0 bg-gradient-to-r from-white via-white/95 to-transparent dark:from-zinc-950 dark:via-zinc-950/95 dark:to-transparent"></div>
                
@@ -1088,16 +1091,16 @@
                            <img src="${bgImg}" class="w-full h-full object-cover">
                        </div>
                        <div class="flex-1 min-w-0">
-                           <p class="text-[10px] sm:text-xs font-black text-red-600 dark:text-red-500 uppercase tracking-wider mb-1 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> Continue Watching</p>
+                           <p class="text-[10px] sm:text-xs font-black text-fuchsia-600 dark:text-fuchsia-400 uppercase tracking-wider mb-1 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-fuchsia-500 animate-pulse shadow-[0_0_8px_rgba(217,70,239,0.8)]"></span> Continue Watching</p>
                            <h3 class="text-base sm:text-lg font-black text-gray-900 dark:text-white truncate">${lastWatched.title}</h3>
                            <p class="text-xs sm:text-sm font-bold text-gray-500 dark:text-zinc-400 mt-0.5 truncate">${subtitle}</p>
                        </div>
                    </div>
                    <div class="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end mt-2 sm:mt-0 pt-3 sm:pt-0 border-t sm:border-none border-gray-200/50 dark:border-zinc-800/50">
-                       <button onclick="clearContinueWatching(event)" title="Remove" class="shrink-0 p-2.5 rounded-xl bg-gray-100 dark:bg-zinc-900/80 text-gray-500 hover:text-red-600 dark:text-zinc-400 dark:hover:text-red-500 transition-colors active:scale-95 shadow-sm border border-gray-200 dark:border-zinc-800">
+                       <button onclick="clearContinueWatching(event)" title="Remove" class="shrink-0 p-2.5 rounded-xl bg-gray-100 dark:bg-zinc-900/80 text-gray-500 hover:text-fuchsia-600 dark:text-zinc-400 dark:hover:text-fuchsia-400 transition-colors active:scale-95 shadow-sm border border-gray-200 dark:border-zinc-800">
                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                        </button>
-                       <button onclick="resumeWatching()" class="flex-1 sm:flex-none justify-center bg-red-600 hover:bg-red-500 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-red-600/30 transition-all active:scale-95 text-sm sm:text-base">
+                       <button onclick="resumeWatching()" class="flex-1 sm:flex-none justify-center bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-[0_0_15px_rgba(217,70,239,0.3)] transition-all active:scale-95 text-sm sm:text-base">
                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Resume
                        </button>
                    </div>
