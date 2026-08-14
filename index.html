@@ -2,7 +2,7 @@
 <html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -63,6 +63,9 @@
       overflow-x: hidden;
       font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       transition: background-color 0.3s ease, color 0.3s ease;
+      padding-left: env(safe-area-inset-left);
+      padding-right: env(safe-area-inset-right);
+      padding-bottom: env(safe-area-inset-bottom);
     }
 
     .glass-panel {
@@ -199,7 +202,7 @@
     </div>
   </nav>
 
-  <main class="max-w-[1800px] mx-auto flex-grow w-full pt-[175px] md:pt-[130px] pb-20">
+  <main class="max-w-[1800px] mx-auto flex-grow w-full pb-20 transition-[padding] duration-300">
     
     <!-- Loading Spinner -->
     <div id="loading-indicator" class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
@@ -255,8 +258,10 @@
     <div id="home-section" class="hero-glow animate-fade-in hidden">
       <div id="continue-bar-container" class="hidden px-4 sm:px-6 lg:px-8 max-w-[1800px] mx-auto"></div>
 
-      <div id="hero-container" class="relative w-full aspect-[4/5] xs:aspect-[1/1] sm:aspect-[16/9] lg:aspect-[21/9] max-h-[85vh] overflow-hidden sm:rounded-3xl border-y sm:border border-gray-200 dark:border-zinc-800/80 shadow-2xl mb-10 sm:mb-14 sm:mx-6 lg:mx-8 sm:max-w-[calc(100%-3rem)] lg:max-w-[calc(100%-4rem)] cursor-pointer group bg-zinc-900">
-        <!-- Hero content dynamically injected -->
+      <div class="w-full px-0 sm:px-6 lg:px-8 max-w-[1800px] mx-auto">
+        <div id="hero-container" class="relative w-full aspect-[4/5] xs:aspect-[1/1] sm:aspect-[16/9] lg:aspect-[21/9] max-h-[85vh] overflow-hidden sm:rounded-3xl border-y sm:border border-gray-200 dark:border-zinc-800/80 shadow-2xl mb-10 sm:mb-14 cursor-pointer group bg-zinc-900">
+          <!-- Hero content dynamically injected -->
+        </div>
       </div>
       
       <div class="px-4 sm:px-6 lg:px-8 mb-5 sm:mb-6 flex justify-between items-end">
@@ -413,7 +418,18 @@
     document.addEventListener('DOMContentLoaded', () => {
       init();
       updateThemeUI();
+      adjustMainPadding();
+      window.addEventListener('resize', adjustMainPadding);
+      window.addEventListener('orientationchange', () => setTimeout(adjustMainPadding, 100));
     });
+
+    function adjustMainPadding() {
+        const nav = document.querySelector('nav');
+        const main = document.querySelector('main');
+        if (nav && main) {
+            main.style.paddingTop = `${nav.offsetHeight + 10}px`;
+        }
+    }
 
     async function init() {
       showLoader();
@@ -513,6 +529,8 @@
           mobileBtn.className = "flex-1 px-3 py-2 rounded-lg text-gray-500 dark:text-zinc-400 hover:text-gray-900 dark:hover:text-white transition-all active:scale-95 text-center";
         }
       });
+      
+      adjustMainPadding(); // Re-adjust padding in case filters wrap differently
       
       if(document.getElementById('home-section').classList.contains('hidden') === false) {
           const allBtn = document.querySelector('.genre-pill');
@@ -1064,21 +1082,23 @@
                <div class="absolute inset-0 bg-cover bg-center opacity-10 dark:opacity-20 transition-transform duration-700 group-hover:scale-105" style="background-image: url('${bgImg}')"></div>
                <div class="absolute inset-0 bg-gradient-to-r from-white via-white/95 to-transparent dark:from-zinc-950 dark:via-zinc-950/95 dark:to-transparent"></div>
                
-               <div class="relative z-10 flex items-center gap-4 w-full">
-                   <div class="w-16 h-24 sm:w-14 sm:h-20 bg-gray-200 dark:bg-zinc-800 rounded-lg shadow-md shrink-0 overflow-hidden">
-                       <img src="${bgImg}" class="w-full h-full object-cover">
+               <div class="relative z-10 flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 w-full">
+                   <div class="flex items-center gap-4 flex-1 min-w-0 w-full">
+                       <div class="w-16 h-24 sm:w-14 sm:h-20 bg-gray-200 dark:bg-zinc-800 rounded-lg shadow-md shrink-0 overflow-hidden">
+                           <img src="${bgImg}" class="w-full h-full object-cover">
+                       </div>
+                       <div class="flex-1 min-w-0">
+                           <p class="text-[10px] sm:text-xs font-black text-red-600 dark:text-red-500 uppercase tracking-wider mb-1 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> Continue Watching</p>
+                           <h3 class="text-base sm:text-lg font-black text-gray-900 dark:text-white truncate">${lastWatched.title}</h3>
+                           <p class="text-xs sm:text-sm font-bold text-gray-500 dark:text-zinc-400 mt-0.5 truncate">${subtitle}</p>
+                       </div>
                    </div>
-                   <div class="flex-1 min-w-0">
-                       <p class="text-[10px] sm:text-xs font-black text-red-600 dark:text-red-500 uppercase tracking-wider mb-1 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> Continue Watching</p>
-                       <h3 class="text-base sm:text-lg font-black text-gray-900 dark:text-white truncate">${lastWatched.title}</h3>
-                       <p class="text-xs sm:text-sm font-bold text-gray-500 dark:text-zinc-400 mt-0.5 truncate">${subtitle}</p>
-                   </div>
-                   <div class="flex items-center gap-2 shrink-0 ml-auto mt-2 sm:mt-0">
-                       <button onclick="clearContinueWatching(event)" title="Remove" class="p-2 sm:p-2.5 rounded-xl bg-gray-100 dark:bg-zinc-900/80 text-gray-500 hover:text-red-600 dark:text-zinc-400 dark:hover:text-red-500 transition-colors active:scale-95 shadow-sm border border-gray-200 dark:border-zinc-800">
-                           <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                   <div class="flex items-center gap-2 shrink-0 w-full sm:w-auto justify-end mt-2 sm:mt-0 pt-3 sm:pt-0 border-t sm:border-none border-gray-200/50 dark:border-zinc-800/50">
+                       <button onclick="clearContinueWatching(event)" title="Remove" class="shrink-0 p-2.5 rounded-xl bg-gray-100 dark:bg-zinc-900/80 text-gray-500 hover:text-red-600 dark:text-zinc-400 dark:hover:text-red-500 transition-colors active:scale-95 shadow-sm border border-gray-200 dark:border-zinc-800">
+                           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                        </button>
-                       <button onclick="resumeWatching()" class="bg-red-600 hover:bg-red-500 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-red-600/30 transition-all active:scale-95 text-sm sm:text-base">
-                           <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Resume
+                       <button onclick="resumeWatching()" class="flex-1 sm:flex-none justify-center bg-red-600 hover:bg-red-500 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-red-600/30 transition-all active:scale-95 text-sm sm:text-base">
+                           <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Resume
                        </button>
                    </div>
                </div>
