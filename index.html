@@ -253,6 +253,8 @@
     </div>
 
     <div id="home-section" class="hero-glow animate-fade-in hidden">
+      <div id="continue-bar-container" class="hidden px-4 sm:px-6 lg:px-8 max-w-[1800px] mx-auto"></div>
+
       <div id="hero-container" class="relative w-full aspect-[4/5] xs:aspect-[1/1] sm:aspect-[16/9] lg:aspect-[21/9] max-h-[85vh] overflow-hidden sm:rounded-3xl border-y sm:border border-gray-200 dark:border-zinc-800/80 shadow-2xl mb-10 sm:mb-14 sm:mx-6 lg:mx-8 sm:max-w-[calc(100%-3rem)] lg:max-w-[calc(100%-4rem)] cursor-pointer group bg-zinc-900">
         <!-- Hero content dynamically injected -->
       </div>
@@ -405,6 +407,9 @@
     let favorites = JSON.parse(localStorage.getItem('streamflix_favorites')) || [];
     let activeTab = 'watchlist';
 
+    /* Note: Precise iframe timestamps cannot be retrieved due to browser CORS policies blocking cross-origin frame contents. We save the exact server, episode, and series instead. */
+    let lastWatched = JSON.parse(localStorage.getItem('streamflix_last_watched')) || null;
+
     document.addEventListener('DOMContentLoaded', () => {
       init();
       updateThemeUI();
@@ -433,6 +438,7 @@
             renderHero(validResults[0]);
             renderGrid('categories-container', validResults.slice(1));
             document.getElementById('home-section').classList.remove('hidden');
+            renderContinueBar();
         } else { throw new Error("No results"); }
       } catch (err) {
         console.error(err);
@@ -683,7 +689,7 @@
       }
     };
 
-    window.openModal = async function openModal(id, type) {
+    window.openModal = async function openModal(id, type, resume = false) {
       currentModalItem = { id, type };
       const modal = document.getElementById('player-modal');
       modal.classList.remove('opacity-0', 'pointer-events-none');
@@ -712,13 +718,25 @@
 
       updateModalButtonsUI();
 
-      currentServerIndex = 0;
+      let targetSeason = 1;
+      let targetEpisode = 1;
+
+      if (resume && lastWatched && lastWatched.id === id) {
+          currentServerIndex = lastWatched.serverIndex || 0;
+          if (type === 'tv') {
+              targetSeason = lastWatched.season;
+              targetEpisode = lastWatched.episode;
+          }
+      } else {
+          currentServerIndex = 0;
+      }
+
       if (type === 'movie') {
           document.getElementById('tv-controls').classList.add('hidden');
           setVideoSource();
       } else {
           document.getElementById('tv-controls').classList.remove('hidden');
-          setupTvControls(details);
+          setupTvControls(details, targetSeason, targetEpisode);
       }
     };
 
@@ -796,6 +814,20 @@
                 document.getElementById('current-server-name').textContent = `Server: ${server.name}`;
                 document.querySelector('#iframe-loader span').textContent = 'Connecting...';
                 
+                lastWatched = {
+                    id: currentModalItem.id,
+                    type: currentModalItem.type,
+                    title: currentModalItem.details.title || currentModalItem.details.name,
+                    poster_path: currentModalItem.details.poster_path,
+                    serverIndex: currentServerIndex,
+                    serverName: server.name,
+                    season: currentSeason,
+                    episode: currentEpisode,
+                    timestamp: Date.now()
+                };
+                localStorage.setItem('streamflix_last_watched', JSON.stringify(lastWatched));
+                renderContinueBar();
+                
                 // Add a small delay to ensure loader is visible before setting src
                 setTimeout(() => {
                     document.getElementById('video-frame').src = url;
@@ -854,7 +886,7 @@
         setVideoSource();
     };
 
-    function setupTvControls(details) {
+    function setupTvControls(details, targetSeason = 1, targetEpisode = 1) {
         const select = document.getElementById('season-select');
         select.innerHTML = '';
         
@@ -867,14 +899,15 @@
         });
         
         if(seasons.length > 0) {
-            currentSeason = seasons[0].season_number;
-            currentEpisode = 1;
-            select.value = currentSeason;
-            handleSeasonChange(currentSeason);
+            const validSeason = seasons.find(s => s.season_number == targetSeason) ? targetSeason : seasons[0].season_number;
+            currentSeason = validSeason;
+            currentEpisode = targetEpisode;
+            select.value = validSeason;
+            handleSeasonChange(validSeason, targetEpisode);
         }
     }
 
-    window.handleSeasonChange = async function handleSeasonChange(seasonNum) {
+    window.handleSeasonChange = async function handleSeasonChange(seasonNum, targetEpisode = null) {
         currentSeason = seasonNum;
         const data = await fetchAPI(`/tv/${currentModalItem.id}/season/${seasonNum}`);
         if(!data) return;
@@ -882,10 +915,14 @@
         const container = document.getElementById('episodes-list');
         container.innerHTML = '';
         
+        let epToPlay = targetEpisode || 1;
+        let epElementToPlay = null;
+
         if (data.episodes) {
             data.episodes.forEach(ep => {
+                const isTarget = ep.episode_number == epToPlay;
                 const div = document.createElement('div');
-                div.className = `episode-card p-3 rounded-xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 cursor-pointer hover:border-red-500 transition-all shadow-sm flex gap-3 ${ep.episode_number == currentEpisode ? 'active' : ''}`;
+                div.className = `episode-card p-3 rounded-xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 cursor-pointer hover:border-red-500 transition-all shadow-sm flex gap-3 ${isTarget ? 'active' : ''}`;
                 div.onclick = () => playEpisode(ep.episode_number, div);
                 
                 const img = ep.still_path ? `<img src="${IMG_W500}${ep.still_path}" class="w-24 h-16 sm:w-32 sm:h-20 object-cover rounded-lg shrink-0">` : `<div class="w-24 h-16 sm:w-32 sm:h-20 bg-gray-200 dark:bg-zinc-800 rounded-lg shrink-0 flex items-center justify-center text-xs font-bold text-gray-400">No Image</div>`;
@@ -898,10 +935,17 @@
                     </div>
                 `;
                 container.appendChild(div);
+
+                if (isTarget) epElementToPlay = div;
             });
         }
 
-        playEpisode(1, container.firstElementChild);
+        if (!epElementToPlay && container.firstElementChild) {
+            epElementToPlay = container.firstElementChild;
+            epToPlay = data.episodes[0].episode_number;
+        }
+
+        playEpisode(epToPlay, epElementToPlay);
     };
 
     window.playEpisode = function playEpisode(epNum, element) {
@@ -998,6 +1042,62 @@
         }
         switchListTab(activeTab);
         closeConfirmModal();
+    };
+
+    window.renderContinueBar = function renderContinueBar() {
+        const container = document.getElementById('continue-bar-container');
+        if (!container) return;
+        
+        if (!lastWatched) {
+            container.innerHTML = '';
+            container.classList.add('hidden');
+            return;
+        }
+
+        const bgImg = `${IMG_W500}${lastWatched.poster_path}`;
+        const subtitle = lastWatched.type === 'tv' 
+            ? `Server: ${lastWatched.serverName} • Season ${lastWatched.season} Ep ${lastWatched.episode}` 
+            : `Server: ${lastWatched.serverName}`;
+
+        container.innerHTML = `
+            <div class="glass-panel relative overflow-hidden rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center gap-4 border border-gray-200 dark:border-zinc-800/80 shadow-lg group mb-8">
+               <div class="absolute inset-0 bg-cover bg-center opacity-10 dark:opacity-20 transition-transform duration-700 group-hover:scale-105" style="background-image: url('${bgImg}')"></div>
+               <div class="absolute inset-0 bg-gradient-to-r from-white via-white/95 to-transparent dark:from-zinc-950 dark:via-zinc-950/95 dark:to-transparent"></div>
+               
+               <div class="relative z-10 flex items-center gap-4 w-full">
+                   <div class="w-16 h-24 sm:w-14 sm:h-20 bg-gray-200 dark:bg-zinc-800 rounded-lg shadow-md shrink-0 overflow-hidden">
+                       <img src="${bgImg}" class="w-full h-full object-cover">
+                   </div>
+                   <div class="flex-1 min-w-0">
+                       <p class="text-[10px] sm:text-xs font-black text-red-600 dark:text-red-500 uppercase tracking-wider mb-1 flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> Continue Watching</p>
+                       <h3 class="text-base sm:text-lg font-black text-gray-900 dark:text-white truncate">${lastWatched.title}</h3>
+                       <p class="text-xs sm:text-sm font-bold text-gray-500 dark:text-zinc-400 mt-0.5 truncate">${subtitle}</p>
+                   </div>
+                   <div class="flex items-center gap-2 shrink-0 ml-auto mt-2 sm:mt-0">
+                       <button onclick="clearContinueWatching(event)" title="Remove" class="p-2 sm:p-2.5 rounded-xl bg-gray-100 dark:bg-zinc-900/80 text-gray-500 hover:text-red-600 dark:text-zinc-400 dark:hover:text-red-500 transition-colors active:scale-95 shadow-sm border border-gray-200 dark:border-zinc-800">
+                           <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                       </button>
+                       <button onclick="resumeWatching()" class="bg-red-600 hover:bg-red-500 text-white px-5 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-red-600/30 transition-all active:scale-95 text-sm sm:text-base">
+                           <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Resume
+                       </button>
+                   </div>
+               </div>
+            </div>
+        `;
+        container.classList.remove('hidden');
+    };
+
+    window.clearContinueWatching = function(e) {
+        if(e) e.stopPropagation();
+        lastWatched = null;
+        localStorage.removeItem('streamflix_last_watched');
+        renderContinueBar();
+    };
+
+    window.resumeWatching = function() {
+        if (lastWatched) {
+            openModal(lastWatched.id, lastWatched.type, true);
+        }
     };
 
     document.addEventListener('keydown', (e) => {
